@@ -1,6 +1,7 @@
 import os
 import urllib.request
 import urllib.parse
+import time
 
 
 def _get_input_file_name(day):
@@ -40,3 +41,10 @@ def fetch(year, day):
     f.write(resp)
     f.close()
     return resp
+
+
+def time_it(l):
+    t = time.process_time_ns()
+    l()
+    t = (time.process_time_ns() - t) / 1000 / 1000
+    print("It took {} ms".format(t))
