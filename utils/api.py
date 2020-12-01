@@ -43,8 +43,8 @@ def fetch(year, day):
     return resp
 
 
-def time_it(l):
+def time_it(l, *args):
     t = time.process_time_ns()
-    l()
+    r = l(*args)
     t = (time.process_time_ns() - t) / 1000 / 1000
-    print("It took {} ms".format(t))
+    return r, t
