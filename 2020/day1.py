@@ -30,5 +30,8 @@ def solve():
     p2, p2_time = api.time_it(part2, arr)
     print("Part two {}, it took {} ms".format(p2, p2_time))
 
+    assert p1 == 1018944
+    assert p2 == 8446464
+
 
 api.time_it(solve)
