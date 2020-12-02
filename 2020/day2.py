@@ -44,5 +44,7 @@ def solve():
     p2, p2_time = api.time_it(part2, data)
     print("Part two {}, it took {} ms".format(p2, p2_time))
 
+    assert p1 == 628
+    assert p2 == 705
 
 solve()
