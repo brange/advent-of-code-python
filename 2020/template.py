@@ -13,7 +13,7 @@ def part2(data):
 
 def solve():
     input_ = api.fetch(YEAR, DAY)
-    data = input_
+    data = input_.strip().split("\n")
 
     p1, p1_time = api.time_it(part1, data)
     print("Part one {}, it took {} ms".format(p1, p1_time))
