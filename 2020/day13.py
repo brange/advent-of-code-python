@@ -37,21 +37,18 @@ def part2(data):
             continue
         buses.append(Bus(int(a), index))
 
-    t = buses[0].bus_id
+    t = 0
     t_delta = buses[0].bus_id
     for a in range(1, len(buses)):
         while True:
-            all_good = True
+            t += t_delta
             buses_sliced = buses[:a + 1]
             for bus in buses_sliced:
                 if (t + bus.delay) % bus.bus_id != 0:
-                    all_good = False
                     break
-            if all_good:
+            else:
                 t_delta = math.lcm(*list(map(lambda x: x.bus_id, buses_sliced)))
                 break
-            else:
-                t += t_delta
 
     return t
 
