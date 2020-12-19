@@ -1,5 +1,5 @@
 from utils import api
-import re
+import regex
 
 YEAR, DAY = 2020, 19
 
@@ -31,21 +31,28 @@ def parse_input(data):
     return rules, inputs
 
 
-def build_regex(all_rules, rule_number=0, max_recursive_level=-1, recursive_level=0):
-    regex = ""
+def build_regex(all_rules, rule_number=0):
+    regex_ = ""
     for sub_rule in all_rules[rule_number].sub_rules:
-        if rule_number in sub_rule and max_recursive_level > 0 and recursive_level > max_recursive_level:
-            continue
+        recursive = any(str(line).startswith('recursive_') for line in sub_rule)
+        if recursive:
+            # (?P<rec_XX>(a)(?&rec_XX)?b)
+            regex_ += "(?<rec{}>".format(rule_number)
         for rule in sub_rule:
-            if rule == '"a"' or rule == '"b"':
-                regex += rule[1:2]
+            if type(rule) == str and rule.startswith("recursive_"):
+                regex_ += "(?&rec{})?".format(rule_number)
             else:
-                regex += build_regex(all_rules, int(rule), max_recursive_level, recursive_level + 1)
-        regex += "|"
-    regex = regex[:-1]
-    if len(regex) > 0:
-        regex = "(" + regex + ")"
-    return regex
+                if rule == '"a"' or rule == '"b"':
+                    regex_ += rule[1:2]
+                else:
+                    regex_ += build_regex(all_rules, int(rule))
+        if recursive:
+            regex_ += ")"
+        regex_ += "|"
+    regex_ = regex_[:-1]
+    if len(regex_) > 0:
+        regex_ = "(?:" + regex_ + ")"
+    return regex_
 
 
 def part1(data):
@@ -53,7 +60,7 @@ def part1(data):
 
     rule0 = "^" + build_regex(rules, 0) + "$"
 
-    pattern = re.compile(rule0)
+    pattern = regex.compile(rule0)
     num_matches = 0
     for input in inputs:
         if pattern.match(input):
@@ -66,20 +73,11 @@ def part2(data):
     rules, inputs = parse_input(data)
     # 8: 42 | 42 8
     # 11: 42 31 | 42 11 31
-    rule8 = Rule(8, [[42], [42, 8]])
-    rule11 = Rule(11, [[42, 31], [42, 11, 31]])
-    #rule8 = Rule(8, [["42+"]])
-    #rule11 = Rule(11, [["41+", "31+"]])
-    rules[8] = rule8
-    rules[11] = rule11
+    rules[8] = Rule(8, [[42], [42, "recursive_8"]])
+    rules[11] = Rule(11, [[42, 31], [42, "recursive_11", 31]])
 
-    max_input_length = 0
-    for input in inputs:
-        max_input_length = max(max_input_length, len(input))
-
-    rule0 = "^" + build_regex(rules, 0, max_input_length) + "$"
-
-    pattern = re.compile(rule0)
+    rule0 = "^" + build_regex(rules) + "$"
+    pattern = regex.compile(rule0)
     num_matches = 0
     for input in inputs:
         if pattern.match(input):
@@ -98,6 +96,7 @@ def solve():
 
     p2, p2_time = api.time_it(part2, data)
     print("Part two {}, it took {} ms".format(p2, p2_time))
+    assert p2 == 377
 
 
 solve()
