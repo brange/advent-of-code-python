@@ -46,10 +46,14 @@ def prev_key(player):
 def recursive_combat(player1, player2):
     prev_p1, prev_p2 = set(), set()
     while len(player1) > 0 and len(player2) > 0:
+        if (m := max(player1)) > max(player2) and m > (len(player1) + len(player2)):
+            # if max(player1) is larger than the total number of cards it can't create a recursive combat
+            # and if it is also larger than the player2's largest card, player1 can't lose it to player2.
+            # therefore will player1 win (could be stale mate, but because of the infinite loop rule it can't)
+            return ["player one wins"], []
         key1, key2 = prev_key(player1), prev_key(player2)
         if key1 in prev_p1 or key2 in prev_p2:
-            player2 = []
-            break
+            return ["player one wins"], []
         prev_p1.add(key1)
         prev_p2.add(key2)
 
