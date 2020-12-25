@@ -14,11 +14,12 @@ def calculate_loop_size(subject_number, public_key):
 
 
 def transform(subject_number, loop_size):
-    key = 1
-    for _ in range(loop_size):
-        key = key * subject_number
-        key = key % 20201227
-    return key
+    return pow(subject_number, loop_size, 20201227)
+    #key = 1
+    #for _ in range(loop_size):
+    #    key = key * subject_number
+    #    key = key % 20201227
+    #return key
 
 
 def part1(data):
